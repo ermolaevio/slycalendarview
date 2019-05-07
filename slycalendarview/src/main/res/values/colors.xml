@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="slycalendar_defBackgroundColor">#ffffff</color>
-    <color name="slycalendar_defHeaderColor">#2962ff</color>
+    <color name="slycalendar_defHeaderColor">#2c98ff</color>
     <color name="slycalendar_defHeaderTextColor">#ffffff</color>
     <color name="slycalendar_defTextColor">#333333</color>
-    <color name="slycalendar_defSelectedColor">#2962ff</color>
+    <color name="slycalendar_defSelectedColor">#2c98ff</color>
     <color name="slycalendar_defSelectedTextColor">#ffffff</color>
+    <color name="slycalendar_defTitle">#484848</color>
+    <color name="slycalendar_defButtonsColor">#2c98ff</color>
 </resources>

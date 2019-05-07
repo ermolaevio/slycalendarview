@@ -1,6 +1,5 @@
 package ru.slybeaver.slycalendarview;
 
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.Nullable;
@@ -10,7 +9,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -188,27 +186,6 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
             }
         });
 
-        findViewById(R.id.txtTime).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                int style = R.style.SlyCalendarTimeDialogTheme;
-                if (slyCalendarData.getTimeTheme() != null) {
-                    style = slyCalendarData.getTimeTheme();
-                }
-
-                TimePickerDialog tpd = new TimePickerDialog(getContext(), style, new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        slyCalendarData.setSelectedHour(hourOfDay);
-                        slyCalendarData.setSelectedMinutes(minute);
-                        showTime();
-                    }
-                }, slyCalendarData.getSelectedHour(), slyCalendarData.getSelectedMinutes(), true);
-                tpd.show();
-            }
-        });
-
         ViewPager vpager = findViewById(R.id.content);
         vpager.getAdapter().notifyDataSetChanged();
         vpager.invalidate();
@@ -258,19 +235,13 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
         findViewById(R.id.headerView).setBackgroundColor(slyCalendarData.getHeaderColor());
         ((TextView) findViewById(R.id.txtYear)).setTextColor(slyCalendarData.getHeaderTextColor());
         ((TextView) findViewById(R.id.txtSelectedPeriod)).setTextColor(slyCalendarData.getHeaderTextColor());
-        ((TextView) findViewById(R.id.txtTime)).setTextColor(slyCalendarData.getHeaderColor());
 
     }
-
 
     private void showTime() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, slyCalendarData.getSelectedHour());
         calendar.set(Calendar.MINUTE, slyCalendarData.getSelectedMinutes());
-        ((TextView) findViewById(R.id.txtTime)).setText(
-                new SimpleDateFormat("HH:mm", Locale.getDefault()).format(calendar.getTime())
-        );
-
     }
 
 }
