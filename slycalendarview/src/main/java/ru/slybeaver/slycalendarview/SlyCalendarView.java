@@ -100,8 +100,6 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
     private void showCalendar() {
 
         paintCalendar();
-        showTime();
-
         findViewById(R.id.txtCancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -235,13 +233,5 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
         findViewById(R.id.headerView).setBackgroundColor(slyCalendarData.getHeaderColor());
         ((TextView) findViewById(R.id.txtYear)).setTextColor(slyCalendarData.getHeaderTextColor());
         ((TextView) findViewById(R.id.txtSelectedPeriod)).setTextColor(slyCalendarData.getHeaderTextColor());
-
     }
-
-    private void showTime() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, slyCalendarData.getSelectedHour());
-        calendar.set(Calendar.MINUTE, slyCalendarData.getSelectedMinutes());
-    }
-
 }
