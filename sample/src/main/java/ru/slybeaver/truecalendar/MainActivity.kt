@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity(), SlyCalendarDialog.Callback {
         findViewById<View>(R.id.btnShowCalendar).setOnClickListener {
             SlyCalendarDialog()
                 .setSingle(false)
-                .setFirstMonday(false)
                 .setCallback(this@MainActivity)
                 .show(supportFragmentManager, "TAG_SLYCALENDAR")
         }

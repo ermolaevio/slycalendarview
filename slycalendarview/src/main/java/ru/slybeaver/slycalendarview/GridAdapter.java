@@ -24,6 +24,7 @@ import ru.slybeaver.slycalendarview.listeners.GridChangeListener;
  * Created by psinetron on 29/11/2018.
  * http://slybeaver.ru
  */
+// todo clean here
 public class GridAdapter extends ArrayAdapter {
 
     private SlyCalendarData calendarData;
@@ -66,7 +67,7 @@ public class GridAdapter extends ArrayAdapter {
             calendarEnd.set(Calendar.HOUR, 0);
             calendarEnd.set(Calendar.MINUTE, 0);
             calendarEnd.set(Calendar.SECOND, 0);
-            calendarEnd.set(Calendar.MILLISECOND,0);
+            calendarEnd.set(Calendar.MILLISECOND, 0);
         }
 
 
@@ -79,17 +80,16 @@ public class GridAdapter extends ArrayAdapter {
         view.findViewById(R.id.cellView).setBackgroundResource(R.color.slycalendar_defBackgroundColor);
 
 
-
         view.findViewById(R.id.cellView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Calendar selectedDate = Calendar.getInstance();
                 selectedDate.setTime(monthlyDates.get(position));
-                selectedDate.set(Calendar.HOUR,0);
-                selectedDate.set(Calendar.MINUTE,0);
-                selectedDate.set(Calendar.SECOND,0);
-                selectedDate.set(Calendar.MILLISECOND,0);
-                if (listener!=null) listener.dateSelect(selectedDate.getTime());
+                selectedDate.set(Calendar.HOUR, 0);
+                selectedDate.set(Calendar.MINUTE, 0);
+                selectedDate.set(Calendar.SECOND, 0);
+                selectedDate.set(Calendar.MILLISECOND, 0);
+                if (listener != null) listener.dateSelect(selectedDate.getTime());
                 notifyDataSetChanged();
                 gridListener.gridChanged();
             }
@@ -100,11 +100,11 @@ public class GridAdapter extends ArrayAdapter {
             public boolean onLongClick(View v) {
                 Calendar selectedDate = Calendar.getInstance();
                 selectedDate.setTime(monthlyDates.get(position));
-                selectedDate.set(Calendar.HOUR,0);
-                selectedDate.set(Calendar.MINUTE,0);
-                selectedDate.set(Calendar.SECOND,0);
-                selectedDate.set(Calendar.MILLISECOND,0);
-                if (listener!=null) listener.dateLongSelect(monthlyDates.get(position));
+                selectedDate.set(Calendar.HOUR, 0);
+                selectedDate.set(Calendar.MINUTE, 0);
+                selectedDate.set(Calendar.SECOND, 0);
+                selectedDate.set(Calendar.MILLISECOND, 0);
+                if (listener != null) listener.dateLongSelect(monthlyDates.get(position));
                 notifyDataSetChanged();
                 gridListener.gridChanged();
                 return true;
@@ -196,6 +196,12 @@ public class GridAdapter extends ArrayAdapter {
         return monthlyDates.get(position);
     }
 
+    public void update(int shiftMonth) {
+        this.shiftMonth = shiftMonth;
+        init();
+        notifyDataSetChanged();
+    }
+
     private void init() {
         monthlyDates = new ArrayList<>();
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
@@ -210,6 +216,4 @@ public class GridAdapter extends ArrayAdapter {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
     }
-
-
 }

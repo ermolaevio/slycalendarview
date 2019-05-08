@@ -5,6 +5,8 @@ import android.content.res.TypedArray;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -15,8 +17,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import ru.slybeaver.slycalendarview.adapter.YearListAdapter;
 import ru.slybeaver.slycalendarview.listeners.DateSelectListener;
 import ru.slybeaver.slycalendarview.listeners.DialogCompleteListener;
+import ru.slybeaver.slycalendarview.listeners.YearSelectedListener;
 
 /**
  * Created by psinetron on 29/11/2018.
@@ -92,13 +96,45 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
 
         final ViewPager vpager = findViewById(R.id.content);
         vpager.setAdapter(new MonthPagerAdapter(slyCalendarData, this));
-        vpager.setCurrentItem(vpager.getAdapter().getCount() / 2);
+        final MonthPagerAdapter vadapter = (MonthPagerAdapter) vpager.getAdapter();
+        vpager.setCurrentItem(vadapter.getCount() / 2);
 
         showCalendar();
+        findViewById(R.id.txtYear).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                final View arrows = findViewById(R.id.arrows_container);
+                arrows.setVisibility(View.GONE);
+                vpager.setVisibility(View.INVISIBLE);
+                v.setClickable(false);
+
+                final RecyclerView list = findViewById(R.id.years);
+                list.setVisibility(View.VISIBLE);
+                list.setLayoutManager(new LinearLayoutManager(getContext()));
+
+                list.setAdapter(new YearListAdapter(2018, new YearSelectedListener() {
+                    @Override
+                    public void onYearSelected(int year) {
+                        arrows.setVisibility(View.VISIBLE);
+                        vpager.setVisibility(View.VISIBLE);
+                        list.setVisibility(View.GONE);
+                        list.setAdapter(null);
+                        v.setClickable(true);
+
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(slyCalendarData.getShowDate());
+                        calendar.set(Calendar.YEAR, year);
+                        slyCalendarData.setShowDate(calendar.getTime());
+                        showCalendar();
+                        vadapter.update(vpager.getCurrentItem(), vpager);
+                    }
+                }));
+            }
+        });
     }
 
     private void showCalendar() {
-
+        // todo clean here
         paintCalendar();
         findViewById(R.id.txtCancel).setOnClickListener(new OnClickListener() {
             @Override
@@ -134,7 +170,6 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
             }
         });
 
-
         Calendar calendarStart = Calendar.getInstance();
         Calendar calendarEnd = null;
         if (slyCalendarData.getSelectedStartDate() != null) {
@@ -158,6 +193,7 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
         } else {
             if (calendarStart.get(Calendar.MONTH) == calendarEnd.get(Calendar.MONTH)) {
                 ((TextView) findViewById(R.id.txtSelectedPeriod)).setText(
+                        // todo to upper case first letter
                         getContext().getString(R.string.slycalendar_dates_period, new SimpleDateFormat("EE, dd", Locale.getDefault()).format(calendarStart.getTime()), new SimpleDateFormat("EE, dd MMM", Locale.getDefault()).format(calendarEnd.getTime()))
                 );
             } else {
@@ -167,12 +203,11 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
             }
         }
 
-
         findViewById(R.id.btnMonthPrev).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 ViewPager vpager = findViewById(R.id.content);
-                vpager.setCurrentItem(vpager.getCurrentItem()-1);
+                vpager.setCurrentItem(vpager.getCurrentItem() - 1);
             }
         });
 
@@ -180,14 +215,13 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
             @Override
             public void onClick(View v) {
                 ViewPager vpager = findViewById(R.id.content);
-                vpager.setCurrentItem(vpager.getCurrentItem()+1);
+                vpager.setCurrentItem(vpager.getCurrentItem() + 1);
             }
         });
 
         ViewPager vpager = findViewById(R.id.content);
         vpager.getAdapter().notifyDataSetChanged();
         vpager.invalidate();
-
     }
 
     @Override

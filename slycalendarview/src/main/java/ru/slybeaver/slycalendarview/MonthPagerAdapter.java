@@ -2,6 +2,7 @@ package ru.slybeaver.slycalendarview;
 
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,7 @@ public class MonthPagerAdapter extends PagerAdapter {
 
     private SlyCalendarData slyCalendarData;
     private DateSelectListener listener;
-    private ArrayList tags = new ArrayList();
+    private ArrayList<String> tags = new ArrayList<>();
     private final String TAG_PREFIX = "SLY_CAL_TAG";
 
     MonthPagerAdapter(SlyCalendarData slyCalendarData, DateSelectListener listener) {
@@ -54,7 +55,6 @@ public class MonthPagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull final ViewGroup container, final int position) {
         int indexShift = position - (getCount() / 2);
 
-
         LayoutInflater inflater = LayoutInflater.from(container.getContext());
         final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.slycalendar_calendar, container, false);
 
@@ -68,14 +68,23 @@ public class MonthPagerAdapter extends PagerAdapter {
         });
         ((GridView) view.findViewById(R.id.calendarGrid)).setAdapter(adapter);
 
+        initMonth(view, indexShift);
+        view.setTag(TAG_PREFIX + position);
+        container.addView(view);
+        initDaysOfWeek(view);
+
+        return view;
+    }
+
+    private void initMonth(ViewGroup view, int indexShift) {
         Calendar currentDate = Calendar.getInstance();
         currentDate.setTime(slyCalendarData.getShowDate());
         currentDate.add(Calendar.MONTH, indexShift);
         ((TextView) view.findViewById(R.id.txtSelectedMonth)).setText(new SimpleDateFormat("LLLL yyyy", Locale.getDefault()).format(currentDate.getTime()));
+    }
 
-        view.setTag(TAG_PREFIX + position);
-        container.addView(view);
-
+    private void initDaysOfWeek(ViewGroup view) {
+        // todo clean here
         Calendar weekDays = Calendar.getInstance();
         weekDays.set(Calendar.DAY_OF_WEEK, slyCalendarData.isFirstMonday() ? 2 : 1);
         ((TextView) view.findViewById(R.id.day1)).setText(new SimpleDateFormat("EE", Locale.getDefault()).format(weekDays.getTime()).substring(0, 1).toUpperCase() + new SimpleDateFormat("EE", Locale.getDefault()).format(weekDays.getTime()).substring(1));
@@ -91,9 +100,6 @@ public class MonthPagerAdapter extends PagerAdapter {
         ((TextView) view.findViewById(R.id.day6)).setText(new SimpleDateFormat("EE", Locale.getDefault()).format(weekDays.getTime()).substring(0, 1).toUpperCase() + new SimpleDateFormat("EE", Locale.getDefault()).format(weekDays.getTime()).substring(1));
         weekDays.set(Calendar.DAY_OF_WEEK, slyCalendarData.isFirstMonday() ? 1 : 7);
         ((TextView) view.findViewById(R.id.day7)).setText(new SimpleDateFormat("EE", Locale.getDefault()).format(weekDays.getTime()).substring(0, 1).toUpperCase() + new SimpleDateFormat("EE", Locale.getDefault()).format(weekDays.getTime()).substring(1));
-
-
-        return view;
     }
 
     @Override
@@ -107,5 +113,19 @@ public class MonthPagerAdapter extends PagerAdapter {
 
     }
 
+    public void update(int currentPos, ViewPager viewPager) {
+        updateGridView(currentPos, viewPager);
+        updateGridView(currentPos - 1, viewPager);
+        updateGridView(currentPos + 1, viewPager);
+    }
 
+    private void updateGridView(int currentPos, ViewPager viewPager) {
+        int shiftMonth = currentPos - (getCount() / 2);
+
+        ViewGroup view = viewPager.findViewWithTag(TAG_PREFIX + currentPos);
+
+        initMonth(view, shiftMonth);
+        GridView gridView = view.findViewById(R.id.calendarGrid);
+        ((GridAdapter) gridView.getAdapter()).update(shiftMonth);
+    }
 }

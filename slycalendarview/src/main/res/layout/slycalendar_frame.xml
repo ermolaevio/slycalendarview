@@ -35,7 +35,7 @@
         <TextView
             android:id="@+id/txtYear"
             android:layout_width="wrap_content"
-            android:layout_height="22dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:alpha="0.5"
             android:fontFamily="@font/roboto_medium"
@@ -55,9 +55,10 @@
 
     </LinearLayout>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/content"
@@ -66,6 +67,7 @@
             android:layout_margin="12dp" />
 
         <LinearLayout
+            android:id="@+id/arrows_container"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_margin="12dp"
@@ -100,11 +102,21 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/years"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="16dp"
+            android:layout_above="@+id/buttons_container"
+            android:layout_margin="7dp"
+            tools:listitem="@layout/slycalendar_year_cell" />
+
+        <LinearLayout
+            android:id="@+id/buttons_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:orientation="horizontal">
 
             <FrameLayout
@@ -142,7 +154,7 @@
 
         </LinearLayout>
 
-    </FrameLayout>
+    </RelativeLayout>
 
 
 </LinearLayout>
