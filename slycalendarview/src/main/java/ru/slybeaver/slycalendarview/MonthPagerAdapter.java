@@ -53,7 +53,7 @@ public class MonthPagerAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull final ViewGroup container, final int position) {
-        int indexShift = position - (getCount() / 2);
+        int indexShift = getShiftMonth(position);
 
         LayoutInflater inflater = LayoutInflater.from(container.getContext());
         final ViewGroup view = (ViewGroup) inflater.inflate(R.layout.slycalendar_calendar, container, false);
@@ -74,6 +74,10 @@ public class MonthPagerAdapter extends PagerAdapter {
         initDaysOfWeek(view);
 
         return view;
+    }
+
+    private int getShiftMonth(int position) {
+        return position - (getCount() / 2);
     }
 
     private void initMonth(ViewGroup view, int indexShift) {
@@ -110,7 +114,6 @@ public class MonthPagerAdapter extends PagerAdapter {
             return POSITION_NONE;
         }
         return POSITION_UNCHANGED;
-
     }
 
     public void update(int currentPos, ViewPager viewPager) {
@@ -119,10 +122,10 @@ public class MonthPagerAdapter extends PagerAdapter {
         updateGridView(currentPos + 1, viewPager);
     }
 
-    private void updateGridView(int currentPos, ViewPager viewPager) {
-        int shiftMonth = currentPos - (getCount() / 2);
+    private void updateGridView(int position, ViewPager viewPager) {
+        int shiftMonth = getShiftMonth(position);
 
-        ViewGroup view = viewPager.findViewWithTag(TAG_PREFIX + currentPos);
+        ViewGroup view = viewPager.findViewWithTag(TAG_PREFIX + position);
 
         initMonth(view, shiftMonth);
         GridView gridView = view.findViewById(R.id.calendarGrid);

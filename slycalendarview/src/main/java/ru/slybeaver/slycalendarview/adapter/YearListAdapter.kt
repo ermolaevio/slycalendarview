@@ -10,7 +10,7 @@ import android.widget.TextView
 import ru.slybeaver.slycalendarview.R
 import ru.slybeaver.slycalendarview.listeners.YearSelectedListener
 
-class YearListAdapter(private val current: Int, val listener: YearSelectedListener) :
+class YearListAdapter(private val current: Int, private val listener: YearSelectedListener) :
     RecyclerView.Adapter<YearListAdapter.YearHolder>() {
 
     private val firstYear = 1970

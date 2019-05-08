@@ -52,7 +52,6 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
         super(context, attrs, defStyleAttr);
         this.attrs = attrs;
         this.defStyleAttr = defStyleAttr;
-
     }
 
     public void setCallback(@Nullable SlyCalendarDialog.Callback callback) {
@@ -112,7 +111,10 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
                 list.setVisibility(View.VISIBLE);
                 list.setLayoutManager(new LinearLayoutManager(getContext()));
 
-                list.setAdapter(new YearListAdapter(2018, new YearSelectedListener() {
+                final Calendar calendar = Calendar.getInstance();
+                calendar.setTime(slyCalendarData.getShowDate());
+                int currentYear = calendar.get(Calendar.YEAR);
+                list.setAdapter(new YearListAdapter(currentYear, new YearSelectedListener() {
                     @Override
                     public void onYearSelected(int year) {
                         arrows.setVisibility(View.VISIBLE);
@@ -121,7 +123,6 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
                         list.setAdapter(null);
                         v.setClickable(true);
 
-                        Calendar calendar = Calendar.getInstance();
                         calendar.setTime(slyCalendarData.getShowDate());
                         calendar.set(Calendar.YEAR, year);
                         slyCalendarData.setShowDate(calendar.getTime());
@@ -129,6 +130,9 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
                         vadapter.update(vpager.getCurrentItem(), vpager);
                     }
                 }));
+                int position = currentYear - 1970;
+                if (position > 2) position -= 3;
+                list.scrollToPosition(position);
             }
         });
     }

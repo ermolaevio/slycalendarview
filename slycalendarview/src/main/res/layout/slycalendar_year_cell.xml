@@ -4,6 +4,7 @@
     android:id="@+id/year"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
     android:fontFamily="@font/roboto_medium"
     android:gravity="center"
     android:padding="12dp"
