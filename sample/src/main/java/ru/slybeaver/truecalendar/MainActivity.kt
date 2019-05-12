@@ -29,15 +29,11 @@ class MainActivity : AppCompatActivity(), SlyCalendarDialog.Callback {
     }
 
     override fun onDataSelected(
-        firstDate: Calendar?,
-        secondDate: Calendar?,
-        hours: Int,
-        minutes: Int
+        firstDate: Calendar,
+        secondDate: Calendar
     ) {
         if (firstDate != null) {
             if (secondDate == null) {
-                firstDate.set(Calendar.HOUR_OF_DAY, hours)
-                firstDate.set(Calendar.MINUTE, minutes)
                 Toast.makeText(
                     this,
                     SimpleDateFormat(getString(R.string.timeFormat), Locale.getDefault()).format(

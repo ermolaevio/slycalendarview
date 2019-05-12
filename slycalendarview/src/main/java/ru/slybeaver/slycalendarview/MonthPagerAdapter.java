@@ -2,12 +2,13 @@ package ru.slybeaver.slycalendarview;
 
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.TextView;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,18 +26,16 @@ public class MonthPagerAdapter extends PagerAdapter {
 
     private SlyCalendarData slyCalendarData;
     private DateSelectListener listener;
-    private ArrayList<String> tags = new ArrayList<>();
-    private final String TAG_PREFIX = "SLY_CAL_TAG";
+    private ViewGroup mainView;
 
-    MonthPagerAdapter(SlyCalendarData slyCalendarData, DateSelectListener listener) {
+    MonthPagerAdapter(SlyCalendarData slyCalendarData, DateSelectListener listener, ViewGroup mainView) {
         this.slyCalendarData = slyCalendarData;
         this.listener = listener;
-
+        this.mainView = mainView;
     }
 
     @Override
     public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-        tags.remove(((View) object).getTag().toString());
         container.removeView((View) object);
     }
 
@@ -61,26 +60,20 @@ public class MonthPagerAdapter extends PagerAdapter {
         final GridAdapter adapter = new GridAdapter(container.getContext(), slyCalendarData, indexShift, listener, new GridChangeListener() {
             @Override
             public void gridChanged() {
-                tags.add(TAG_PREFIX + (position + 1));
-                tags.add(TAG_PREFIX + (position - 1));
-                notifyDataSetChanged();
+                update(position);
             }
         });
         ((GridView) view.findViewById(R.id.calendarGrid)).setAdapter(adapter);
 
-        initMonth(view, indexShift);
-        view.setTag(TAG_PREFIX + position);
+        showSelectedMonth(view, indexShift);
+        view.setTag(createTag(position));
         container.addView(view);
         initDaysOfWeek(view);
 
         return view;
     }
 
-    private int getShiftMonth(int position) {
-        return position - (getCount() / 2);
-    }
-
-    private void initMonth(ViewGroup view, int indexShift) {
+    private void showSelectedMonth(ViewGroup view, int indexShift) {
         Calendar currentDate = Calendar.getInstance();
         currentDate.setTime(slyCalendarData.getShowDate());
         currentDate.add(Calendar.MONTH, indexShift);
@@ -106,29 +99,30 @@ public class MonthPagerAdapter extends PagerAdapter {
         ((TextView) view.findViewById(R.id.day7)).setText(new SimpleDateFormat("EE", Locale.getDefault()).format(weekDays.getTime()).substring(0, 1).toUpperCase() + new SimpleDateFormat("EE", Locale.getDefault()).format(weekDays.getTime()).substring(1));
     }
 
-    @Override
-    public int getItemPosition(Object object) {
-        String tag = ((ViewGroup) object).getTag().toString();
-        if (tags.contains(tag)) {
-            tags.remove(tag);
-            return POSITION_NONE;
+    public void update(int currentPos) {
+        for (int i = currentPos - 1; i <= currentPos + 1; i++) {
+            updateItem(getShiftMonth(i), getRootViewForItem(i));
         }
-        return POSITION_UNCHANGED;
     }
 
-    public void update(int currentPos, ViewPager viewPager) {
-        updateGridView(currentPos, viewPager);
-        updateGridView(currentPos - 1, viewPager);
-        updateGridView(currentPos + 1, viewPager);
-    }
-
-    private void updateGridView(int position, ViewPager viewPager) {
-        int shiftMonth = getShiftMonth(position);
-
-        ViewGroup view = viewPager.findViewWithTag(TAG_PREFIX + position);
-
-        initMonth(view, shiftMonth);
-        GridView gridView = view.findViewById(R.id.calendarGrid);
+    private void updateItem(int shiftMonth, ViewGroup root) {
+        showSelectedMonth(root, shiftMonth);
+        GridView gridView = root.findViewById(R.id.calendarGrid);
         ((GridAdapter) gridView.getAdapter()).update(shiftMonth);
+    }
+
+    private int getShiftMonth(int position) {
+        return position - (getCount() / 2);
+    }
+
+    @NotNull
+    private String createTag(int position) {
+        String TAG_PREFIX = "SLY_CAL_TAG";
+        return TAG_PREFIX + position;
+    }
+
+    @NonNull
+    private ViewGroup getRootViewForItem(int pos) {
+        return mainView.findViewWithTag(createTag(pos));
     }
 }

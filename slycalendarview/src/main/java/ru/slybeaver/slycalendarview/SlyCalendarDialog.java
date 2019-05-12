@@ -90,7 +90,7 @@ public class SlyCalendarDialog extends DialogFragment implements DialogCompleteL
     public interface Callback {
         void onCancelled();
 
-        void onDataSelected(Calendar firstDate, Calendar secondDate, int hours, int minutes);
+        void onDataSelected(Calendar firstDate, Calendar secondDate);
     }
 
 
@@ -123,6 +123,4 @@ public class SlyCalendarDialog extends DialogFragment implements DialogCompleteL
         slyCalendarData.setSelectedTextColor(selectedTextColor);
         return this;
     }
-
-
 }
