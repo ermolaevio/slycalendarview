@@ -29,8 +29,8 @@ class MainActivity : AppCompatActivity(), SlyCalendarDialog.Callback {
     }
 
     override fun onDataSelected(
-        firstDate: Calendar,
-        secondDate: Calendar
+        firstDate: Calendar?,
+        secondDate: Calendar?
     ) {
         if (firstDate != null) {
             if (secondDate == null) {

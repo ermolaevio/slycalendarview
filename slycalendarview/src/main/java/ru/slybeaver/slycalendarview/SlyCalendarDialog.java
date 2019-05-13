@@ -90,7 +90,7 @@ public class SlyCalendarDialog extends DialogFragment implements DialogCompleteL
     public interface Callback {
         void onCancelled();
 
-        void onDataSelected(Calendar firstDate, Calendar secondDate);
+        void onDataSelected(@Nullable Calendar firstDate, @Nullable Calendar secondDate);
     }
 
 

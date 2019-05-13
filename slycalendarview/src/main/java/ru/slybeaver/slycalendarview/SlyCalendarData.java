@@ -40,6 +40,9 @@ class SlyCalendarData {
     }
 
     public Date getSelectedStartDate() {
+        if (selectedStartDate == null) {
+            selectedStartDate = Calendar.getInstance().getTime();
+        }
         return selectedStartDate;
     }
 

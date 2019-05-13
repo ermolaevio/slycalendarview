@@ -96,8 +96,8 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
 
     private void init() {
         final ViewPager vpager = findViewById(R.id.content);
-        vpager.setAdapter(new MonthPagerAdapter(slyCalendarData, this, vpager));
-        final MonthPagerAdapter vadapter = (MonthPagerAdapter) vpager.getAdapter();
+        final MonthPagerAdapter vadapter = new MonthPagerAdapter(slyCalendarData, this, vpager);
+        vpager.setAdapter(vadapter);
         vpager.setCurrentItem(vadapter.getCount() / 2);
 
         findViewById(R.id.txtYear).setOnClickListener(new OnClickListener() {
@@ -114,7 +114,9 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
 
                 final Calendar calendar = Calendar.getInstance();
                 calendar.setTime(slyCalendarData.getShowDate());
-                int currentYear = calendar.get(Calendar.YEAR);
+                int shiftMonth = vpager.getCurrentItem() - (vadapter.getCount() / 2);
+                calendar.add(Calendar.MONTH, shiftMonth);
+                final int currentYear = calendar.get(Calendar.YEAR);
                 list.setAdapter(new YearListAdapter(currentYear, new YearSelectedListener() {
                     @Override
                     public void onYearSelected(int year) {
@@ -124,13 +126,12 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
                         list.setAdapter(null);
                         v.setClickable(true);
 
-                        calendar.setTime(slyCalendarData.getShowDate());
-                        calendar.set(Calendar.YEAR, year);
-                        slyCalendarData.setShowDate(calendar.getTime());
-                        showHeader();
-                        vadapter.update(vpager.getCurrentItem());
+                        int shiftMonth = (year - currentYear) * 12;
+                        vpager.setCurrentItem(vpager.getCurrentItem() + shiftMonth, false);
+                        ((TextView) findViewById(R.id.txtYear)).setText(String.valueOf(year));
                     }
                 }));
+                // todo move from here to year adapter
                 int position = currentYear - 1970;
                 if (position > 2) position -= 3;
                 list.scrollToPosition(position);
@@ -181,8 +182,7 @@ public class SlyCalendarView extends FrameLayout implements DateSelectListener {
     public void dateSelect(Date selectedDate) {
         if (slyCalendarData.getSelectedStartDate() == null || slyCalendarData.isSingle()) {
             slyCalendarData.setSelectedStartDate(selectedDate);
-        }
-        else if (slyCalendarData.getSelectedEndDate() == null) {
+        } else if (slyCalendarData.getSelectedEndDate() == null) {
             if (selectedDate.getTime() < slyCalendarData.getSelectedStartDate().getTime()) {
                 slyCalendarData.setSelectedEndDate(slyCalendarData.getSelectedStartDate());
                 slyCalendarData.setSelectedStartDate(selectedDate);

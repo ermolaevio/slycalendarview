@@ -15,7 +15,7 @@ class YearListAdapter(private val current: Int, private val listener: YearSelect
 
     private val firstYear = 1970
 
-    override fun getItemCount() = 130 // 1970 - 2100
+    override fun getItemCount() = 130 // 1970 - 2099
 
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): YearHolder {
         val view = LayoutInflater.from(parent.context)
@@ -37,7 +37,7 @@ class YearListAdapter(private val current: Int, private val listener: YearSelect
     }
 
     fun scrollToPosition() {
-
+        // todo
     }
 
     class YearHolder(view: View) : RecyclerView.ViewHolder(view) {
