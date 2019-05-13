@@ -52,15 +52,13 @@ public class GridAdapter extends ArrayAdapter {
         Calendar dateCal = Calendar.getInstance();
         dateCal.setTime(monthlyDates.get(position));
 
-        Calendar calendarStart = null;
-        if (calendarData.getSelectedStartDate() != null) {
-            calendarStart = Calendar.getInstance();
-            calendarStart.setTime(calendarData.getSelectedStartDate());
-            calendarStart.set(Calendar.HOUR, 0);
-            calendarStart.set(Calendar.MINUTE, 0);
-            calendarStart.set(Calendar.SECOND, 0);
-            calendarStart.set(Calendar.MILLISECOND, 0);
-        }
+        Calendar calendarStart = Calendar.getInstance();
+        calendarStart.setTime(calendarData.getSelectedStartDate());
+        calendarStart.set(Calendar.HOUR, 0);
+        calendarStart.set(Calendar.MINUTE, 0);
+        calendarStart.set(Calendar.SECOND, 0);
+        calendarStart.set(Calendar.MILLISECOND, 0);
+
         Calendar calendarEnd = null;
         if (calendarData.getSelectedEndDate() != null) {
             calendarEnd = Calendar.getInstance();
@@ -91,7 +89,7 @@ public class GridAdapter extends ArrayAdapter {
                 selectedDate.set(Calendar.SECOND, 0);
                 selectedDate.set(Calendar.MILLISECOND, 0);
                 if (listener != null) listener.dateSelect(selectedDate.getTime());
-                notifyDataSetChanged();
+                notifyDataSetChanged();// todo remove maybe
                 gridListener.gridChanged();
             }
         });
@@ -115,7 +113,7 @@ public class GridAdapter extends ArrayAdapter {
 
         view.findViewById(R.id.cellView).setBackgroundColor(calendarData.getBackgroundColor());
 
-        if (calendarStart != null && calendarEnd != null) {
+        if (calendarEnd != null) {
             if (dateCal.get(Calendar.DAY_OF_YEAR) == calendarStart.get(Calendar.DAY_OF_YEAR) && dateCal.get(Calendar.YEAR) == calendarStart.get(Calendar.YEAR)) {
                 LayerDrawable shape = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.slycalendar_start_day);
                 assert shape != null;
