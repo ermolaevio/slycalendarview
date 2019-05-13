@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -208,9 +209,13 @@ public class GridAdapter extends ArrayAdapter {
         calendar.setTime(calendarData.getShowDate());
         calendar.add(Calendar.MONTH, shiftMonth);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-        int firstDayOfTheMonth = calendarData.isFirstMonday() ? calendar.get(Calendar.DAY_OF_WEEK) - 2 : calendar.get(Calendar.DAY_OF_WEEK) - 1;
+
+        int dOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        if (calendarData.isFirstMonday() && dOfWeek == Calendar.SUNDAY) dOfWeek = 8;
+        int firstDayOfTheMonth = calendarData.isFirstMonday() ? dOfWeek - 2 : dOfWeek - 1;
         calendar.add(Calendar.DAY_OF_MONTH, -firstDayOfTheMonth);
         int MAX_CALENDAR_COLUMN = 42;
+
         while (monthlyDates.size() < MAX_CALENDAR_COLUMN) {
             monthlyDates.add(calendar.getTime());
             calendar.add(Calendar.DAY_OF_MONTH, 1);
