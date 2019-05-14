@@ -14,8 +14,19 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
+    companion object {
+        private const val NOT_SELECTED = "–"
+        private const val ALPHA_100 = 1f
+        private const val ALPHA_50 = 0.5f
+        private const val DATE_FORMAT = "dd MMM"
+    }
+
     var listener: DateSwitchedListener? = null
-    private var currentState: State = State.END
+    var currentState: State = State.DEFAULT
+        set(value) {
+            field = value
+            switchDate()
+        }
     private val startYear: TextView
     private val endYear: TextView
     private val startDate: TextView
@@ -32,68 +43,104 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
         endDate = findViewById(R.id.txtEndDate)
 
         startDate.setOnClickListener {
-            if (currentState != State.START) {
-                currentState = State.START
-                listener?.onDateSwitched(currentState)
-                switchDate()
+            when (currentState) {
+                State.END_DATE -> switchDateState(State.START_DATE)
+                State.END_YEAR -> switchYear(State.START_YEAR)
+                else -> {
+                    //ignore
+                }
             }
         }
         endDate.setOnClickListener {
-            if (currentState != State.END) {
-                currentState = State.END
-                listener?.onDateSwitched(currentState)
-                switchDate()
+            when (currentState) {
+                State.START_DATE -> switchDateState(State.END_DATE)
+                State.START_YEAR -> switchYear(State.END_YEAR)
+                else -> {
+                    //ignore
+                }
             }
         }
         startYear.setOnClickListener {
-            currentState = State.START
-            listener?.onYearClicked(currentState)
-            switchDate()
+            when (currentState) {
+                State.DEFAULT -> {
+                    //ignore
+                }
+                State.END_YEAR, State.END_DATE, State.START_DATE -> switchYear(State.START_YEAR)
+                else -> {
+                    //ignore
+                }
+            }
         }
         endYear.setOnClickListener {
-            currentState = State.END
-            listener?.onYearClicked(currentState)
-            switchDate()
+            when (currentState) {
+                State.DEFAULT -> {
+                    //ignore
+                }
+                State.START_YEAR, State.START_DATE, State.END_DATE -> switchYear(State.END_YEAR)
+                else -> {
+                    //ignore
+                }
+            }
         }
     }
 
-    fun updateHeader(start: Date, end: Date?) {
-        val calendarStart = Calendar.getInstance()
-        calendarStart.time = start
+    private fun switchDateState(state: State) {
+        currentState = state
+        listener?.onDateSwitched(currentState)
+    }
+
+    private fun switchYear(state: State) {
+        currentState = state
+        listener?.onYearClicked(currentState)
+    }
+
+    fun updateHeader(start: Date?, end: Date?) {
+        val calendarStart = start?.let {
+            val instance = Calendar.getInstance()
+            instance.time = it
+            instance
+        }
 
         val calendarEnd = end?.let {
             val instance = Calendar.getInstance()
             instance.time = it
             instance
         }
-        val sf = SimpleDateFormat("dd MMM", Locale.getDefault())
+        val sf = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
 
-        startYear.text = calendarStart.get(Calendar.YEAR).toString()
-        startDate.text = sf.format(calendarStart.time)
+        val current = Calendar.getInstance()
+        val currentYear = current.get(Calendar.YEAR).toString()
+
+        if (calendarStart != null) {
+            startYear.text = calendarStart.get(Calendar.YEAR).toString()
+            startDate.text = sf.format(calendarStart.time)
+        } else {
+            startYear.text = currentYear
+            startDate.text = NOT_SELECTED
+        }
 
         if (calendarEnd != null) {
             endYear.text = calendarEnd.get(Calendar.YEAR).toString()
             endDate.text = sf.format(calendarEnd.time)
         } else {
-            endYear.text = null
-            endDate.text = "–"
+            endYear.text = currentYear
+            endDate.text = NOT_SELECTED
         }
     }
 
     private fun switchDate() {
-        // todo to constants
         when (currentState) {
-            State.START -> {
-                startYear.alpha = 1f
-                startDate.alpha = 1f
-                endYear.alpha = 0.5f
-                endDate.alpha = 0.5f
+            State.START_DATE, State.DEFAULT, State.START_YEAR -> {
+                startYear.alpha = ALPHA_100
+                startDate.alpha = ALPHA_100
+                endYear.alpha = ALPHA_50
+                endDate.alpha = ALPHA_50
             }
-            State.END -> {
-                startYear.alpha = 0.5f
-                startDate.alpha = 0.5f
-                endYear.alpha = 1f
-                endDate.alpha = 1f
+            State.END_DATE, State.END_YEAR -> {
+                startYear.alpha = ALPHA_50
+                startDate.alpha = ALPHA_50
+                endYear.alpha = ALPHA_100
+                endDate.alpha = ALPHA_100
             }
         }
     }

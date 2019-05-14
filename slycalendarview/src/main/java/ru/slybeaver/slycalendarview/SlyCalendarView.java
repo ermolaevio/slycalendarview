@@ -124,6 +124,7 @@ public class SlyCalendarView extends FrameLayout
                 slyCalendarData.getSelectedStartDate(),
                 slyCalendarData.getSelectedEndDate()
         );
+        headerView.setCurrentState(slyCalendarData.getCurrentState());
     }
 
     @Override
@@ -144,16 +145,15 @@ public class SlyCalendarView extends FrameLayout
         arrows.setVisibility(View.GONE);
         viewPager.setVisibility(View.INVISIBLE);
         yearsList.setVisibility(View.VISIBLE);
-        headerView.setClickable(false);
-        headerView.setEnabled(false);
 
         Calendar calendar = Calendar.getInstance();
         PagerAdapter adapter = viewPager.getAdapter();
         if (adapter == null) return;
 
-        if (state == State.START) {
+        if (state == State.START_YEAR) {
             calendar.setTime(slyCalendarData.getSelectedStartDate());
-        } else if (state == State.END && slyCalendarData.getSelectedEndDate() != null) {
+        } else if (state == State.END_YEAR) {
+            if (slyCalendarData.getSelectedEndDate() == null) return;
             calendar.setTime(slyCalendarData.getSelectedEndDate());
         }
         final int currentRangeYear = calendar.get(Calendar.YEAR);
@@ -169,8 +169,6 @@ public class SlyCalendarView extends FrameLayout
         viewPager.setVisibility(View.VISIBLE);
         yearsList.setVisibility(View.GONE);
         yearsList.setAdapter(null);
-        headerView.setClickable(true);
-        headerView.setEnabled(true);
 
         MonthPagerAdapter adapter = (MonthPagerAdapter) viewPager.getAdapter();
 
@@ -217,8 +215,11 @@ public class SlyCalendarView extends FrameLayout
             @Override
             public void onClick(View v) {
                 if (callback != null) {
-                    Calendar start = Calendar.getInstance();
-                    start.setTime(slyCalendarData.getSelectedStartDate());
+                    Calendar start = null;
+                    if (slyCalendarData.getSelectedStartDate() != null) {
+                        start = Calendar.getInstance();
+                        start.setTime(slyCalendarData.getSelectedStartDate());
+                    }
 
                     Calendar end = null;
                     if (slyCalendarData.getSelectedEndDate() != null) {

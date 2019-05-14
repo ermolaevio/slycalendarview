@@ -52,12 +52,15 @@ public class GridAdapter extends ArrayAdapter {
         Calendar dateCal = Calendar.getInstance();
         dateCal.setTime(monthlyDates.get(position));
 
-        Calendar calendarStart = Calendar.getInstance();
-        calendarStart.setTime(calendarData.getSelectedStartDate());
-        calendarStart.set(Calendar.HOUR, 0);
-        calendarStart.set(Calendar.MINUTE, 0);
-        calendarStart.set(Calendar.SECOND, 0);
-        calendarStart.set(Calendar.MILLISECOND, 0);
+        Calendar calendarStart = null;
+        if (calendarData.getSelectedStartDate() != null) {
+            calendarStart = Calendar.getInstance();
+            calendarStart.setTime(calendarData.getSelectedStartDate());
+            calendarStart.set(Calendar.HOUR, 0);
+            calendarStart.set(Calendar.MINUTE, 0);
+            calendarStart.set(Calendar.SECOND, 0);
+            calendarStart.set(Calendar.MILLISECOND, 0);
+        }
 
         Calendar calendarEnd = null;
         if (calendarData.getSelectedEndDate() != null) {
@@ -68,7 +71,6 @@ public class GridAdapter extends ArrayAdapter {
             calendarEnd.set(Calendar.SECOND, 0);
             calendarEnd.set(Calendar.MILLISECOND, 0);
         }
-
 
         View view = convertView;
         if (view == null) {
@@ -89,7 +91,6 @@ public class GridAdapter extends ArrayAdapter {
                 selectedDate.set(Calendar.SECOND, 0);
                 selectedDate.set(Calendar.MILLISECOND, 0);
                 if (listener != null) listener.dateSelect(selectedDate.getTime());
-                notifyDataSetChanged();// todo remove maybe
                 gridListener.gridChanged();
             }
         });
@@ -104,7 +105,6 @@ public class GridAdapter extends ArrayAdapter {
                 selectedDate.set(Calendar.SECOND, 0);
                 selectedDate.set(Calendar.MILLISECOND, 0);
                 if (listener != null) listener.dateLongSelect(monthlyDates.get(position));
-                notifyDataSetChanged();
                 gridListener.gridChanged();
                 return true;
             }
@@ -113,7 +113,7 @@ public class GridAdapter extends ArrayAdapter {
 
         view.findViewById(R.id.cellView).setBackgroundColor(calendarData.getBackgroundColor());
 
-        if (calendarEnd != null) {
+        if (calendarStart != null && calendarEnd != null) {
             if (dateCal.get(Calendar.DAY_OF_YEAR) == calendarStart.get(Calendar.DAY_OF_YEAR) && dateCal.get(Calendar.YEAR) == calendarStart.get(Calendar.YEAR)) {
                 LayerDrawable shape = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.slycalendar_start_day);
                 assert shape != null;

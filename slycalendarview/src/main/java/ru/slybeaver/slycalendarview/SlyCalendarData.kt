@@ -4,9 +4,9 @@ import java.util.*
 
 class SlyCalendarData {
 
-    var selectedStartDate: Date = Calendar.getInstance().time // first selected date
+    var selectedStartDate: Date? = null// first selected date
     var selectedEndDate: Date? = null // ended selected date
-    var showDate: Date? = selectedStartDate // current showing date
+    var showDate: Date? = Calendar.getInstance().time // current showing date
 
     var isFirstMonday = true
     var isSingle = false //
@@ -19,19 +19,20 @@ class SlyCalendarData {
     var selectedTextColor: Int? = null
     var timeTheme: Int? = null
 
-    var currentState = State.END // current date to select
+    var currentState = State.DEFAULT // current date to select
 
     fun setNewSelectedDate(selectedDate: Date) {
         val startDate = selectedStartDate
         val endDate = selectedEndDate
 
-        if (isSingle) {
+        if (isSingle || startDate == null) {
             selectedStartDate = selectedDate
+            currentState = State.END_DATE
         } else {
             val selectedDateTime = selectedDate.time
 
             when (currentState) {
-                State.START -> {
+                State.START_DATE -> {
                     if (endDate == null) {
                         selectedStartDate = selectedDate
                     } else {
@@ -43,13 +44,16 @@ class SlyCalendarData {
                         }
                     }
                 }
-                State.END -> {
+                State.END_DATE -> {
                     if (selectedDateTime < startDate.time) {
                         selectedStartDate = selectedDate
                         selectedEndDate = startDate
                     } else if (selectedDateTime > startDate.time) {
                         selectedEndDate = selectedDate
                     }
+                }
+                else -> {
+                    // ignored
                 }
             }
         }
@@ -70,7 +74,7 @@ class SlyCalendarData {
         val endYear = calendarEnd?.get(Calendar.YEAR)
 
         when (currentState) {
-            State.START -> {
+            State.START_YEAR -> {
                 calendarStart.set(Calendar.YEAR, year)
                 if (endYear == null || calendarEnd == null) {
                     selectedStartDate = calendarStart.time
@@ -87,8 +91,9 @@ class SlyCalendarData {
                         selectedStartDate = calendarStart.time
                     }
                 }
+                currentState = State.START_DATE
             }
-            State.END -> {
+            State.END_YEAR -> {
                 calendarEnd ?: return
                 calendarEnd.set(Calendar.YEAR, year)
                 if (year < startYear) {
@@ -104,14 +109,21 @@ class SlyCalendarData {
                         selectedEndDate = calendarEnd.time
                     }
                 }
+                currentState = State.END_DATE
+            }
+            else -> {
+                // ignored
             }
         }
     }
 }
 
 /**
- * date to select
+ * state to know what the user will select
  */
 enum class State {
-    START, END
+    DEFAULT, // select START_DATE first time
+    START_DATE, END_DATE,
+    START_YEAR, END_YEAR
+
 }
