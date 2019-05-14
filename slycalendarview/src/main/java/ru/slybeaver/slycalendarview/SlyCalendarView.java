@@ -112,7 +112,6 @@ public class SlyCalendarView extends FrameLayout
         headerView.setListener(this);
     }
 
-    // drawing header
     @Override
     public void dateSelect(Date selectedDate) {
         slyCalendarData.setNewSelectedDate(selectedDate);
@@ -186,9 +185,10 @@ public class SlyCalendarView extends FrameLayout
         int currentYear = calendar.get(Calendar.YEAR);
         int shiftMonth = (year - currentYear) * 12;
         if (shiftMonth != 0) {
-            // content don't update when set current position for viewPager
+            // content isn't updated when set current position for viewPager
             viewPager.setCurrentItem(curPosition + shiftMonth, false);
         } else {
+            // so we update view manually
             adapter.update(curPosition);
         }
     }

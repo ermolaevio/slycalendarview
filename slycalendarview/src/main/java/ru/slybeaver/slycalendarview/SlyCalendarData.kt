@@ -39,15 +39,15 @@ class SlyCalendarData {
                         if (selectedDateTime < endDate.time) {
                             selectedStartDate = selectedDate
                         } else if (selectedDateTime > endDate.time) {
-                            selectedStartDate = endDate
                             selectedEndDate = selectedDate
+                            currentState = State.END_DATE
                         }
                     }
                 }
                 State.END_DATE -> {
                     if (selectedDateTime < startDate.time) {
                         selectedStartDate = selectedDate
-                        selectedEndDate = startDate
+                        currentState = State.START_DATE
                     } else if (selectedDateTime > startDate.time) {
                         selectedEndDate = selectedDate
                     }
@@ -122,8 +122,7 @@ class SlyCalendarData {
  * state to know what the user will select
  */
 enum class State {
-    DEFAULT, // select START_DATE first time
+    DEFAULT, // select START DATE only first time
     START_DATE, END_DATE,
     START_YEAR, END_YEAR
-
 }
