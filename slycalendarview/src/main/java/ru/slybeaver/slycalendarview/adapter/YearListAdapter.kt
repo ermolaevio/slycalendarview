@@ -36,8 +36,10 @@ class YearListAdapter(private val current: Int, private val listener: YearSelect
         h.year.setOnClickListener { listener.onYearSelected(year) }
     }
 
-    fun scrollToPosition() {
-        // todo
+    fun getPositionToScroll(): Int {
+        var position = current - firstYear
+        if (position > 2) position -= 3
+        return position
     }
 
     class YearHolder(view: View) : RecyclerView.ViewHolder(view) {

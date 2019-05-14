@@ -40,7 +40,7 @@ public class MonthPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return 10000;
+        return 2000;
     }
 
     @Override

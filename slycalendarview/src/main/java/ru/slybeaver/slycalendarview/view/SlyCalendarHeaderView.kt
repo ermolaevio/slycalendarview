@@ -45,7 +45,16 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
                 switchDate()
             }
         }
-        // todo select year
+        startYear.setOnClickListener {
+            currentState = State.START
+            listener?.onYearClicked(currentState)
+            switchDate()
+        }
+        endYear.setOnClickListener {
+            currentState = State.END
+            listener?.onYearClicked(currentState)
+            switchDate()
+        }
     }
 
     fun updateHeader(start: Date, end: Date?) {
@@ -54,7 +63,7 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
 
         val calendarEnd = end?.let {
             val instance = Calendar.getInstance()
-            instance.time = end
+            instance.time = it
             instance
         }
         val sf = SimpleDateFormat("dd MMM", Locale.getDefault())
