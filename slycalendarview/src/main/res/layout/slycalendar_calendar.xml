@@ -116,10 +116,12 @@
 
     </LinearLayout>
 
+    <!--temporary decision with the height of gridView because of measuring the height of view pager-->
+
     <GridView
         android:id="@+id/calendarGrid"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="228dp"
         android:layout_marginTop="10dp"
         android:horizontalSpacing="0dp"
         android:numColumns="7"
