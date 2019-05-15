@@ -127,14 +127,14 @@ public class GridAdapter extends ArrayAdapter {
                 (shape.findDrawableByLayerId(R.id.dateShapeItem)).setAlpha(20);
                 view.findViewById(R.id.cellView).setBackground(shape);
                 if (position % 7 == 0) {
-                    shape = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.slycalendar_start_day);
+                    shape = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.slycalendar_start_day_month);
                     assert shape != null;
                     ((GradientDrawable) shape.findDrawableByLayerId(R.id.dateShapeItem)).setColor(calendarData.getSelectedColor());
                     (shape.findDrawableByLayerId(R.id.dateShapeItem)).setAlpha(20);
                     view.findViewById(R.id.cellView).setBackground(shape);
                 }
                 if ((position + 1) % 7 == 0) {
-                    shape = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.slycalendar_end_day);
+                    shape = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.slycalendar_end_day_month);
                     assert shape != null;
                     ((GradientDrawable) shape.findDrawableByLayerId(R.id.dateShapeItem)).setColor(calendarData.getSelectedColor());
                     (shape.findDrawableByLayerId(R.id.dateShapeItem)).setAlpha(20);

@@ -20,7 +20,6 @@ import ru.slybeaver.slycalendarview.listeners.DialogCompleteListener;
  */
 public class SlyCalendarDialog extends DialogFragment implements DialogCompleteListener {
 
-
     private SlyCalendarData slyCalendarData = new SlyCalendarData();
     private Callback callback = null;
 

@@ -14,12 +14,12 @@
         android:background="@android:color/white"
         android:fontFamily="@font/roboto_bold"
         android:paddingLeft="21dp"
-        android:paddingTop="13dp"
+        android:paddingTop="10dp"
         android:paddingRight="21dp"
-        android:paddingBottom="13dp"
+        android:paddingBottom="10dp"
         android:text="@string/slycalendar_choose_range"
         android:textColor="@color/slycalendar_defTitle"
-        android:textSize="18sp" />
+        android:textSize="16sp" />
 
     <ru.slybeaver.slycalendarview.view.SlyCalendarHeaderView
         android:id="@+id/headerView"
@@ -36,13 +36,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/buttons_container"
-            android:layout_margin="12dp" />
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp" />
 
         <LinearLayout
             android:id="@+id/arrows_container"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_margin="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <ImageView
