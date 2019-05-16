@@ -7,6 +7,7 @@ import android.widget.TextView
 import ru.slybeaver.slycalendarview.R
 import ru.slybeaver.slycalendarview.State
 import ru.slybeaver.slycalendarview.listeners.DateSwitchedListener
+import ru.slybeaver.slycalendarview.util.SlyCalendarUtil
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -64,7 +65,10 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
         }
         startYear.setOnClickListener {
             when (currentState) {
-                State.END_YEAR, State.END_DATE, State.START_DATE -> switchYear(State.START_YEAR)
+                State.END_YEAR,
+                State.END_DATE,
+                State.START_DATE,
+                State.DEFAULT -> switchYear(State.START_YEAR)
                 else -> {
                     //ignore
                 }
@@ -72,7 +76,9 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
         }
         endYear.setOnClickListener {
             when (currentState) {
-                State.START_YEAR, State.START_DATE, State.END_DATE -> switchYear(State.END_YEAR)
+                State.START_YEAR,
+                State.START_DATE,
+                State.END_DATE -> switchYear(State.END_YEAR)
                 else -> {
                     //ignore
                 }
@@ -104,7 +110,7 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
         }
         val sf = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
 
-        val current = Calendar.getInstance()
+        val current = SlyCalendarUtil.getCalendarWithoutTime(Date())
         val currentYear = current.get(Calendar.YEAR).toString()
 
         if (calendarStart != null) {

@@ -218,7 +218,7 @@ public class GridAdapter extends ArrayAdapter {
     }
 
     private boolean checkDateIsEnabled(Calendar date) {
-        if (!calendarData.isDisableFutureDates()) return true;
+        if (!calendarData.isFutureDatesDisabled()) return true;
 
         return date.getTimeInMillis() <= today.getTimeInMillis();
     }

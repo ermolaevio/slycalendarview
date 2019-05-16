@@ -122,8 +122,8 @@ public class SlyCalendarDialog extends DialogFragment implements DialogCompleteL
         return this;
     }
 
-    public SlyCalendarDialog setDisableFuture(boolean isDisableFuture) {
-        slyCalendarData.setDisableFutureDates(isDisableFuture);
+    public SlyCalendarDialog setFutureDatesDisabled(boolean isDisableFuture) {
+        slyCalendarData.setFutureDatesDisabled(isDisableFuture);
         return this;
     }
 }

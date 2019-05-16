@@ -21,7 +21,7 @@ class SlyCalendarData {
     var timeTheme: Int? = null
 
     var currentState = State.DEFAULT // current date to select
-    var isDisableFutureDates: Boolean = true // make future dates are not selectable
+    var isFutureDatesDisabled: Boolean = true // make future dates are not selectable
     val isDateState: Boolean
         get() {
             return when (currentState) {
@@ -47,7 +47,14 @@ class SlyCalendarData {
                     if (endDate == null) {
                         selectedStartDate = selectedDate
                     } else {
-                        if (selectedDateTime < endDate.time) {
+
+                        if (selectedDateTime == startDate.time
+                            || selectedDateTime == endDate.time
+                        ) {
+                            selectedEndDate = null
+                            selectedStartDate = selectedDate
+
+                        } else if (selectedDateTime < endDate.time) {
                             selectedStartDate = selectedDate
                         } else if (selectedDateTime > endDate.time) {
                             selectedEndDate = selectedDate
@@ -56,7 +63,14 @@ class SlyCalendarData {
                     }
                 }
                 State.END_DATE -> {
-                    if (selectedDateTime < startDate.time) {
+                    if (selectedDateTime == startDate.time
+                        || selectedDateTime == endDate?.time
+                    ) {
+                        selectedEndDate = null
+                        selectedStartDate = selectedDate
+                        currentState = State.START_DATE
+
+                    } else if (selectedDateTime < startDate.time) {
                         selectedStartDate = selectedDate
                         currentState = State.START_DATE
                     } else if (selectedDateTime > startDate.time) {
@@ -71,10 +85,15 @@ class SlyCalendarData {
     }
 
     fun setNewSelectedYear(year: Int) {
-        val calendarStart = Calendar.getInstance()
-        calendarStart.time = selectedStartDate
+        var calendarStart: Calendar? =
+            null // start calendar with selected year or current. It depends on the currentState
+        if (selectedStartDate != null) {
+            calendarStart = Calendar.getInstance()
+            calendarStart.time = selectedStartDate
+        }
 
-        var calendarEnd: Calendar? = null
+        var calendarEnd: Calendar? =
+            null // end calendar with selected year or current. It depends on the currentState
         val calendarToday = SlyCalendarUtil.getCalendarWithoutTime(currentDate)
 
         if (selectedEndDate != null) {
@@ -82,13 +101,22 @@ class SlyCalendarData {
             calendarEnd.time = selectedEndDate
         }
 
-        val startYear = calendarStart.get(Calendar.YEAR)
-        val endYear = calendarEnd?.get(Calendar.YEAR)
+        val startYear = calendarStart?.get(Calendar.YEAR) ?: 0
+        val endYear = calendarEnd?.get(Calendar.YEAR) ?: 0
 
         when (currentState) {
             State.START_YEAR -> {
+                if (calendarStart == null) {
+                    currentState = State.START_DATE
+                    return
+                }
+
                 calendarStart.set(Calendar.YEAR, year)
-                if (endYear == null || calendarEnd == null) {
+
+                if (isFutureDatesDisabled && calendarStart.time > calendarToday.time) {
+                    currentState = State.START_DATE
+                    return
+                } else if (calendarEnd == null) {
                     selectedStartDate = calendarStart.time
                 } else if (year < endYear) {
                     selectedStartDate = calendarStart.time
@@ -96,9 +124,12 @@ class SlyCalendarData {
                     selectedStartDate = calendarEnd.time
                     selectedEndDate = calendarStart.time
                 } else {
-                    if (calendarStart.time > calendarEnd.time
-                        && (!isDisableFutureDates || calendarStart.time <= calendarToday.time)
+                    if (calendarStart.time == calendarEnd.time
+                        || calendarStart.time == selectedStartDate
                     ) {
+                        selectedStartDate = calendarStart.time
+                        selectedEndDate = null
+                    } else if (calendarStart.time > calendarEnd.time) {
                         selectedStartDate = calendarEnd.time
                         selectedEndDate = calendarStart.time
                     } else if (calendarStart.time < calendarEnd.time) {
@@ -108,15 +139,28 @@ class SlyCalendarData {
                 currentState = State.START_DATE
             }
             State.END_YEAR -> {
-                calendarEnd ?: return
+                if (calendarStart == null || calendarEnd == null) {
+                    currentState = State.END_DATE
+                    return
+                }
                 calendarEnd.set(Calendar.YEAR, year)
-                if (year < startYear) {
+                if (isFutureDatesDisabled && calendarEnd.time > calendarToday.time) {
+                    currentState = State.END_DATE
+                    return
+                } else if (year < startYear) {
                     selectedStartDate = calendarEnd.time
                     selectedEndDate = calendarStart.time
                 } else if (year > startYear) {
                     selectedEndDate = calendarEnd.time
                 } else {
-                    if (calendarEnd.time < calendarStart.time) {
+                    if (calendarEnd.time == selectedEndDate
+                        || calendarEnd.time == calendarStart.time
+                    ) {
+                        selectedStartDate = calendarStart.time
+                        selectedEndDate = null
+                        currentState = State.START_DATE
+                        return
+                    } else if (calendarEnd.time < calendarStart.time) {
                         selectedStartDate = calendarEnd.time
                         selectedEndDate = calendarStart.time
                     } else if (calendarEnd.time > calendarStart.time) {
@@ -144,7 +188,7 @@ class SlyCalendarData {
  * state to know what the user will select
  */
 enum class State {
-    DEFAULT, // like START DATE, used only at begin
+    DEFAULT, // like START DATE, used only at begin when start date not selected
     START_DATE, END_DATE,
     START_YEAR, END_YEAR
 }

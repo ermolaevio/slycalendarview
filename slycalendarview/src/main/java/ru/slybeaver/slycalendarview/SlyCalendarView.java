@@ -110,7 +110,7 @@ public class SlyCalendarView extends FrameLayout
         final MonthPagerAdapter vadapter = new MonthPagerAdapter(slyCalendarData, this, viewPager);
         viewPager.setAdapter(vadapter);
         int startPosition = SlyCalendarUtil.INSTANCE.startPosition(vadapter.getCount()); // current date
-        if (slyCalendarData.isDisableFutureDates()) {
+        if (slyCalendarData.isFutureDatesDisabled()) {
             viewPager.disableFutureMonths(startPosition, new CurrentMonthListener() {
                 @Override
                 public void onCurrentMonthSelected(boolean selected) {
@@ -158,13 +158,13 @@ public class SlyCalendarView extends FrameLayout
         switchToYearOrMonth(true);
 
         Calendar calendar = Calendar.getInstance();
+        calendar.setTime(slyCalendarData.getCurrentDate());
         PagerAdapter adapter = viewPager.getAdapter();
         if (adapter == null) return;
 
-        if (state == State.START_YEAR) {
+        if (state == State.START_YEAR && slyCalendarData.getSelectedStartDate() != null) {
             calendar.setTime(slyCalendarData.getSelectedStartDate());
-        } else if (state == State.END_YEAR) {
-            if (slyCalendarData.getSelectedEndDate() == null) return;
+        } else if (state == State.END_YEAR && slyCalendarData.getSelectedEndDate() != null) {
             calendar.setTime(slyCalendarData.getSelectedEndDate());
         }
         final int currentRangeYear = calendar.get(Calendar.YEAR);
@@ -172,7 +172,7 @@ public class SlyCalendarView extends FrameLayout
         YearListAdapter yearAdapter = new YearListAdapter(
                 currentRangeYear,
                 this,
-                slyCalendarData.isDisableFutureDates()
+                slyCalendarData.isFutureDatesDisabled()
         );
         yearsList.setAdapter(yearAdapter);
         yearsList.scrollToPosition(yearAdapter.getPositionToScroll());
