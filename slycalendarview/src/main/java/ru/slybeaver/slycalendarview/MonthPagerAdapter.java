@@ -16,6 +16,7 @@ import java.util.Locale;
 
 import ru.slybeaver.slycalendarview.listeners.DateSelectListener;
 import ru.slybeaver.slycalendarview.listeners.GridChangeListener;
+import ru.slybeaver.slycalendarview.util.SlyCalendarUtil;
 
 /**
  * Created by psinetron on 06/12/2018.
@@ -74,7 +75,7 @@ public class MonthPagerAdapter extends PagerAdapter {
 
     private void showSelectedMonth(ViewGroup view, int indexShift) {
         Calendar currentDate = Calendar.getInstance();
-        currentDate.setTime(slyCalendarData.getShowDate());
+        currentDate.setTime(slyCalendarData.getCurrentDate());
         currentDate.add(Calendar.MONTH, indexShift);
         ((TextView) view.findViewById(R.id.txtSelectedMonth)).setText(new SimpleDateFormat("LLLL yyyy", Locale.getDefault()).format(currentDate.getTime()));
     }
@@ -111,7 +112,7 @@ public class MonthPagerAdapter extends PagerAdapter {
     }
 
     private int getShiftMonth(int position) {
-        return position - (getCount() / 2);
+        return SlyCalendarUtil.INSTANCE.getMonthShift(position, getCount());
     }
 
     @NotNull

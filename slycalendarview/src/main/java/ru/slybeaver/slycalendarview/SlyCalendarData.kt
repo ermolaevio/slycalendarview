@@ -1,13 +1,14 @@
 package ru.slybeaver.slycalendarview
 
+import ru.slybeaver.slycalendarview.util.SlyCalendarUtil
 import java.util.*
 
 class SlyCalendarData {
 
     var selectedStartDate: Date? = null// first selected date
     var selectedEndDate: Date? = null // ended selected date
-    var showDate: Date? = Calendar.getInstance().time // current showing date
-
+    val currentDate: Date =
+        SlyCalendarUtil.getCalendarWithoutTime(Date()).time // current showing date
     var isFirstMonday = true
     var isSingle = false //
 
@@ -20,6 +21,7 @@ class SlyCalendarData {
     var timeTheme: Int? = null
 
     var currentState = State.DEFAULT // current date to select
+    var isDisableFutureDates: Boolean = true // make future dates are not selectable
 
     fun setNewSelectedDate(selectedDate: Date) {
         val startDate = selectedStartDate
@@ -64,6 +66,7 @@ class SlyCalendarData {
         calendarStart.time = selectedStartDate
 
         var calendarEnd: Calendar? = null
+        val calendarToday = SlyCalendarUtil.getCalendarWithoutTime(currentDate)
 
         if (selectedEndDate != null) {
             calendarEnd = Calendar.getInstance()
@@ -84,7 +87,9 @@ class SlyCalendarData {
                     selectedStartDate = calendarEnd.time
                     selectedEndDate = calendarStart.time
                 } else {
-                    if (calendarStart.time > calendarEnd.time) {
+                    if (calendarStart.time > calendarEnd.time
+                        && (!isDisableFutureDates || calendarStart.time <= calendarToday.time)
+                    ) {
                         selectedStartDate = calendarEnd.time
                         selectedEndDate = calendarStart.time
                     } else if (calendarStart.time < calendarEnd.time) {
@@ -122,7 +127,7 @@ class SlyCalendarData {
  * state to know what the user will select
  */
 enum class State {
-    DEFAULT, // select START DATE only first time
+    DEFAULT, // like START DATE, used only at begin
     START_DATE, END_DATE,
     START_YEAR, END_YEAR
 }

@@ -9,13 +9,21 @@ import android.view.ViewGroup
 import android.widget.TextView
 import ru.slybeaver.slycalendarview.R
 import ru.slybeaver.slycalendarview.listeners.YearSelectedListener
+import ru.slybeaver.slycalendarview.util.SlyCalendarUtil
+import java.util.*
 
-class YearListAdapter(private val current: Int, private val listener: YearSelectedListener) :
+class YearListAdapter(
+    private val current: Int,
+    private val listener: YearSelectedListener,
+    private val isFutureDisabled: Boolean
+) :
     RecyclerView.Adapter<YearListAdapter.YearHolder>() {
 
     private val firstYear = 1970
 
     override fun getItemCount() = 130 // 1970 - 2099
+
+    private val currentYear = SlyCalendarUtil.getCalendarWithoutTime(Date()).get(Calendar.YEAR)
 
     override fun onCreateViewHolder(parent: ViewGroup, type: Int): YearHolder {
         val view = LayoutInflater.from(parent.context)
@@ -32,6 +40,14 @@ class YearListAdapter(private val current: Int, private val listener: YearSelect
         } else {
             h.year.textSize = 16f
             h.year.setTextColor(Color.BLACK)
+        }
+
+        if (year <= currentYear || !isFutureDisabled) {
+            h.year.alpha = 1f
+            h.year.isEnabled = true
+        } else {
+            h.year.alpha = 0.1f
+            h.year.isEnabled = false
         }
         h.year.setOnClickListener { listener.onYearSelected(year) }
     }

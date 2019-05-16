@@ -18,12 +18,14 @@ import java.util.Calendar;
 import java.util.Date;
 
 import ru.slybeaver.slycalendarview.adapter.YearListAdapter;
+import ru.slybeaver.slycalendarview.listeners.CurrentMonthListener;
 import ru.slybeaver.slycalendarview.listeners.DateSelectListener;
 import ru.slybeaver.slycalendarview.listeners.DateSwitchedListener;
 import ru.slybeaver.slycalendarview.listeners.DialogCompleteListener;
 import ru.slybeaver.slycalendarview.listeners.YearSelectedListener;
-import ru.slybeaver.slycalendarview.util.CalendarUtil;
+import ru.slybeaver.slycalendarview.util.SlyCalendarUtil;
 import ru.slybeaver.slycalendarview.view.SlyCalendarHeaderView;
+import ru.slybeaver.slycalendarview.view.SlyMonthViewPager;
 
 /**
  * Created by psinetron on 29/11/2018.
@@ -40,8 +42,9 @@ public class SlyCalendarView extends FrameLayout
     private int defStyleAttr = 0;
     private SlyCalendarHeaderView headerView;
     private View arrows;
-    private ViewPager viewPager;
+    private SlyMonthViewPager viewPager;
     private RecyclerView yearsList;
+    private View nextArrow;
 
     public SlyCalendarView(Context context) {
         super(context);
@@ -99,13 +102,24 @@ public class SlyCalendarView extends FrameLayout
 
     private void init() {
         arrows = findViewById(R.id.arrows_container);
+        nextArrow = findViewById(R.id.btnMonthNext);
         headerView = findViewById(R.id.headerView);
         viewPager = findViewById(R.id.content);
         yearsList = findViewById(R.id.years);
 
         final MonthPagerAdapter vadapter = new MonthPagerAdapter(slyCalendarData, this, viewPager);
         viewPager.setAdapter(vadapter);
-        viewPager.setCurrentItem(vadapter.getCount() / 2);
+        int startPosition = SlyCalendarUtil.INSTANCE.startPosition(vadapter.getCount()); // current date
+        if (slyCalendarData.isDisableFutureDates()) {
+            viewPager.disableFutureMonths(startPosition, new CurrentMonthListener() {
+                @Override
+                public void onCurrentMonthSelected(boolean selected) {
+                    nextArrow.setEnabled(!selected);
+                    nextArrow.setVisibility(selected ? View.INVISIBLE : View.VISIBLE);
+                }
+            });
+        }
+        viewPager.setCurrentItem(startPosition);
 
         yearsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -157,7 +171,11 @@ public class SlyCalendarView extends FrameLayout
         }
         final int currentRangeYear = calendar.get(Calendar.YEAR);
 
-        YearListAdapter yearAdapter = new YearListAdapter(currentRangeYear, this);
+        YearListAdapter yearAdapter = new YearListAdapter(
+                currentRangeYear,
+                this,
+                slyCalendarData.isDisableFutureDates()
+        );
         yearsList.setAdapter(yearAdapter);
         yearsList.scrollToPosition(yearAdapter.getPositionToScroll());
     }
@@ -171,14 +189,14 @@ public class SlyCalendarView extends FrameLayout
 
         MonthPagerAdapter adapter = (MonthPagerAdapter) viewPager.getAdapter();
 
-        if (slyCalendarData.getShowDate() == null || adapter == null) return;
+        if (slyCalendarData.getCurrentDate() == null || adapter == null) return;
 
         slyCalendarData.setNewSelectedYear(year);
         updateHeader();
 
         int curPosition = viewPager.getCurrentItem();
-        Calendar calendar = CalendarUtil.INSTANCE.getCalendarWithMonthShift(
-                slyCalendarData.getShowDate(),
+        Calendar calendar = SlyCalendarUtil.INSTANCE.getCalendarWithMonthShift(
+                slyCalendarData.getCurrentDate(),
                 curPosition,
                 adapter.getCount()
         );
@@ -242,7 +260,7 @@ public class SlyCalendarView extends FrameLayout
             }
         });
 
-        findViewById(R.id.btnMonthNext).setOnClickListener(new OnClickListener() {
+        nextArrow.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 ViewPager vpager = findViewById(R.id.content);

@@ -62,9 +62,6 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
         }
         startYear.setOnClickListener {
             when (currentState) {
-                State.DEFAULT -> {
-                    //ignore
-                }
                 State.END_YEAR, State.END_DATE, State.START_DATE -> switchYear(State.START_YEAR)
                 else -> {
                     //ignore
@@ -73,9 +70,6 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
         }
         endYear.setOnClickListener {
             when (currentState) {
-                State.DEFAULT -> {
-                    //ignore
-                }
                 State.START_YEAR, State.START_DATE, State.END_DATE -> switchYear(State.END_YEAR)
                 else -> {
                     //ignore

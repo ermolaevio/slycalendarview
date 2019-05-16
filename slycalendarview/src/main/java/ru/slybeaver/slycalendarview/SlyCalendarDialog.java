@@ -92,7 +92,6 @@ public class SlyCalendarDialog extends DialogFragment implements DialogCompleteL
         void onDataSelected(@Nullable Calendar firstDate, @Nullable Calendar secondDate);
     }
 
-
     public SlyCalendarDialog setBackgroundColor(Integer backgroundColor) {
         slyCalendarData.setBackgroundColor(backgroundColor);
         return this;
@@ -120,6 +119,11 @@ public class SlyCalendarDialog extends DialogFragment implements DialogCompleteL
 
     public SlyCalendarDialog setSelectedTextColor(Integer selectedTextColor) {
         slyCalendarData.setSelectedTextColor(selectedTextColor);
+        return this;
+    }
+
+    public SlyCalendarDialog setDisableFuture(boolean isDisableFuture) {
+        slyCalendarData.setDisableFutureDates(isDisableFuture);
         return this;
     }
 }

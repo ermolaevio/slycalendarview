@@ -1,7 +1,6 @@
 package ru.slybeaver.slycalendarview;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.annotation.NonNull;
@@ -20,12 +19,12 @@ import java.util.Locale;
 
 import ru.slybeaver.slycalendarview.listeners.DateSelectListener;
 import ru.slybeaver.slycalendarview.listeners.GridChangeListener;
+import ru.slybeaver.slycalendarview.util.SlyCalendarUtil;
 
 /**
  * Created by psinetron on 29/11/2018.
  * http://slybeaver.ru
  */
-// todo clean here
 public class GridAdapter extends ArrayAdapter {
 
     private SlyCalendarData calendarData;
@@ -35,8 +34,15 @@ public class GridAdapter extends ArrayAdapter {
     private LayoutInflater inflater;
     private GridChangeListener gridListener;
 
+    private final Calendar today = SlyCalendarUtil.INSTANCE.getCalendarWithoutTime(new Date());
 
-    public GridAdapter(@NonNull Context context, @NonNull SlyCalendarData calendarData, int shiftMonth, @Nullable DateSelectListener listener, GridChangeListener gridListener) {
+    public GridAdapter(
+            @NonNull Context context,
+            @NonNull SlyCalendarData calendarData,
+            int shiftMonth,
+            @Nullable DateSelectListener listener,
+            GridChangeListener gridListener
+    ) {
         super(context, R.layout.slycalendar_single_cell);
         this.calendarData = calendarData;
         this.listener = listener;
@@ -54,22 +60,12 @@ public class GridAdapter extends ArrayAdapter {
 
         Calendar calendarStart = null;
         if (calendarData.getSelectedStartDate() != null) {
-            calendarStart = Calendar.getInstance();
-            calendarStart.setTime(calendarData.getSelectedStartDate());
-            calendarStart.set(Calendar.HOUR, 0);
-            calendarStart.set(Calendar.MINUTE, 0);
-            calendarStart.set(Calendar.SECOND, 0);
-            calendarStart.set(Calendar.MILLISECOND, 0);
+            calendarStart = SlyCalendarUtil.INSTANCE.getCalendarWithoutTime(calendarData.getSelectedStartDate());
         }
 
         Calendar calendarEnd = null;
         if (calendarData.getSelectedEndDate() != null) {
-            calendarEnd = Calendar.getInstance();
-            calendarEnd.setTime(calendarData.getSelectedEndDate());
-            calendarEnd.set(Calendar.HOUR, 0);
-            calendarEnd.set(Calendar.MINUTE, 0);
-            calendarEnd.set(Calendar.SECOND, 0);
-            calendarEnd.set(Calendar.MILLISECOND, 0);
+            calendarEnd = SlyCalendarUtil.INSTANCE.getCalendarWithoutTime(calendarData.getSelectedEndDate());
         }
 
         View view = convertView;
@@ -84,35 +80,30 @@ public class GridAdapter extends ArrayAdapter {
         view.findViewById(R.id.cellView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Calendar selectedDate = Calendar.getInstance();
-                selectedDate.setTime(monthlyDates.get(position));
-                selectedDate.set(Calendar.HOUR, 0);
-                selectedDate.set(Calendar.MINUTE, 0);
-                selectedDate.set(Calendar.SECOND, 0);
-                selectedDate.set(Calendar.MILLISECOND, 0);
-                if (listener != null) listener.dateSelect(selectedDate.getTime());
-                gridListener.gridChanged();
+                Calendar selectedDate = SlyCalendarUtil.INSTANCE.getCalendarWithoutTime(monthlyDates.get(position));
+                if (checkDateIsEnabled(selectedDate)) {
+                    if (listener != null) listener.dateSelect(selectedDate.getTime());
+                    gridListener.gridChanged();
+                }
             }
         });
 
         view.findViewById(R.id.cellView).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Calendar selectedDate = Calendar.getInstance();
-                selectedDate.setTime(monthlyDates.get(position));
-                selectedDate.set(Calendar.HOUR, 0);
-                selectedDate.set(Calendar.MINUTE, 0);
-                selectedDate.set(Calendar.SECOND, 0);
-                selectedDate.set(Calendar.MILLISECOND, 0);
-                if (listener != null) listener.dateLongSelect(monthlyDates.get(position));
-                gridListener.gridChanged();
-                return true;
+                Calendar selectedDate = SlyCalendarUtil.INSTANCE.getCalendarWithoutTime(monthlyDates.get(position));
+                if (checkDateIsEnabled(selectedDate)) {
+                    if (listener != null) listener.dateLongSelect(selectedDate.getTime());
+                    gridListener.gridChanged();
+                    return true;
+                }
+                return false;
             }
         });
 
-
         view.findViewById(R.id.cellView).setBackgroundColor(calendarData.getBackgroundColor());
 
+        // todo clean here
         if (calendarStart != null && calendarEnd != null) {
             if (dateCal.get(Calendar.DAY_OF_YEAR) == calendarStart.get(Calendar.DAY_OF_YEAR) && dateCal.get(Calendar.YEAR) == calendarStart.get(Calendar.YEAR)) {
                 LayerDrawable shape = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.slycalendar_start_day);
@@ -141,7 +132,6 @@ public class GridAdapter extends ArrayAdapter {
                     view.findViewById(R.id.cellView).setBackground(shape);
                 }
 
-
             } else if (dateCal.get(Calendar.DAY_OF_YEAR) == calendarEnd.get(Calendar.DAY_OF_YEAR) && dateCal.get(Calendar.YEAR) == calendarEnd.get(Calendar.YEAR)) {
                 LayerDrawable shape = (LayerDrawable) ContextCompat.getDrawable(getContext(), R.drawable.slycalendar_end_day);
                 assert shape != null;
@@ -151,9 +141,8 @@ public class GridAdapter extends ArrayAdapter {
             }
         }
 
-
         Calendar currentDate = Calendar.getInstance();
-        currentDate.setTime(calendarData.getShowDate());
+        currentDate.setTime(calendarData.getCurrentDate());
         currentDate.add(Calendar.MONTH, shiftMonth);
 
         view.findViewById(R.id.frameSelected).setBackgroundResource(0);
@@ -164,7 +153,6 @@ public class GridAdapter extends ArrayAdapter {
             ((GradientDrawable) shape.findDrawableByLayerId(R.id.selectedDateShapeItem)).setColor(calendarData.getSelectedColor());
             view.findViewById(R.id.frameSelected).setBackground(shape);
             ((TextView) view.findViewById(R.id.txtDate)).setTextColor(calendarData.getSelectedTextColor());
-            ((TextView) view.findViewById(R.id.txtDate)).setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         }
 
         if (calendarEnd != null && dateCal.get(Calendar.DAY_OF_YEAR) == calendarEnd.get(Calendar.DAY_OF_YEAR) && currentDate.get(Calendar.MONTH) == dateCal.get(Calendar.MONTH) && dateCal.get(Calendar.YEAR) == calendarEnd.get(Calendar.YEAR)) {
@@ -175,10 +163,19 @@ public class GridAdapter extends ArrayAdapter {
             ((TextView) view.findViewById(R.id.txtDate)).setTextColor(calendarData.getSelectedTextColor());
         }
 
-        if (currentDate.get(Calendar.MONTH) == dateCal.get(Calendar.MONTH)) {
+        if (checkDateIsEnabled(dateCal)) {
+            view.findViewById(R.id.cellView).setEnabled(true);
             (view.findViewById(R.id.txtDate)).setAlpha(1);
+            // highlight day of current month
+            if (currentDate.get(Calendar.MONTH) == dateCal.get(Calendar.MONTH)) {
+                // todo change color or alpha
+                (view.findViewById(R.id.txtDate)).setAlpha(1);
+            } else {
+                (view.findViewById(R.id.txtDate)).setAlpha(.4f);
+            }
         } else {
-            (view.findViewById(R.id.txtDate)).setAlpha(.2f);
+            view.findViewById(R.id.cellView).setEnabled(false);
+            (view.findViewById(R.id.txtDate)).setAlpha(.1f);
         }
 
         return view;
@@ -204,7 +201,7 @@ public class GridAdapter extends ArrayAdapter {
     private void init() {
         monthlyDates = new ArrayList<>();
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
-        calendar.setTime(calendarData.getShowDate());
+        calendar.setTime(calendarData.getCurrentDate());
         calendar.add(Calendar.MONTH, shiftMonth);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
 
@@ -218,5 +215,11 @@ public class GridAdapter extends ArrayAdapter {
             monthlyDates.add(calendar.getTime());
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
+    }
+
+    private boolean checkDateIsEnabled(Calendar date) {
+        if (!calendarData.isDisableFutureDates()) return true;
+
+        return date.getTimeInMillis() <= today.getTimeInMillis();
     }
 }
