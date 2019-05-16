@@ -16,7 +16,7 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     companion object {
-        private const val NOT_SELECTED = "–"
+        private const val NOT_SELECTED = "____"
         private const val ALPHA_100 = 1f
         private const val ALPHA_50 = 0.5f
         private const val DATE_FORMAT = "dd MMM"

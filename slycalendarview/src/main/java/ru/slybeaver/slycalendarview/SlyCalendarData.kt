@@ -8,7 +8,7 @@ class SlyCalendarData {
     var selectedStartDate: Date? = null// first selected date
     var selectedEndDate: Date? = null // end selected date
     val currentDate: Date =
-        SlyCalendarUtil.getCalendarWithoutTime(Date()).time // current showing date
+        SlyCalendarUtil.getCalendarWithoutTime(Date()).time // current showing date. It's today.
     var isFirstMonday = true
     var isSingle = false //
 

@@ -4,6 +4,9 @@ import java.util.*
 
 internal object SlyCalendarUtil {
 
+    /**
+     * get calendar for position of view pager
+     */
     fun getCalendarWithMonthShift(date: Date, pos: Int, count: Int): Calendar {
         val instance = Calendar.getInstance()
         instance.time = date

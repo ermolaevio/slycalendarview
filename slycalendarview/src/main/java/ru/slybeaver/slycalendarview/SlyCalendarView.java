@@ -196,9 +196,15 @@ public class SlyCalendarView extends FrameLayout
         );
         int currentYear = calendar.get(Calendar.YEAR);
         int shiftMonth = (year - currentYear) * 12;
+        int positionToMove = curPosition + shiftMonth;
+        int startPos = SlyCalendarUtil.INSTANCE.startPosition(adapter.getCount());
+
+        if (slyCalendarData.isFutureDatesDisabled() && positionToMove > startPos) {
+            positionToMove = startPos;
+        }
         if (shiftMonth != 0) {
             // content isn't updated when set current position for viewPager
-            viewPager.setCurrentItem(curPosition + shiftMonth, false);
+            viewPager.setCurrentItem(positionToMove, false);
         } else {
             // so we update view manually
             adapter.update(curPosition);
