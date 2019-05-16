@@ -6,7 +6,7 @@
     android:layout_height="38dp"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?android:attr/actionBarItemBackground"
+    android:foreground="@drawable/slycalendar_selected_day_selector"
     tools:background="#2196F3">
 
     <FrameLayout
