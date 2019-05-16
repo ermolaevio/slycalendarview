@@ -1,5 +1,5 @@
 package ru.slybeaver.slycalendarview.listeners
 
-interface CurrentMonthListener {
+internal interface CurrentMonthListener {
     fun onCurrentMonthSelected(selected: Boolean)
 }

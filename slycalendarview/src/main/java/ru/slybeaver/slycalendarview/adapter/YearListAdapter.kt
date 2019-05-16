@@ -12,12 +12,11 @@ import ru.slybeaver.slycalendarview.listeners.YearSelectedListener
 import ru.slybeaver.slycalendarview.util.SlyCalendarUtil
 import java.util.*
 
-class YearListAdapter(
+internal class YearListAdapter(
     private val current: Int,
     private val listener: YearSelectedListener,
     private val isFutureDisabled: Boolean
-) :
-    RecyclerView.Adapter<YearListAdapter.YearHolder>() {
+) : RecyclerView.Adapter<YearListAdapter.YearHolder>() {
 
     private val firstYear = 1970
 
