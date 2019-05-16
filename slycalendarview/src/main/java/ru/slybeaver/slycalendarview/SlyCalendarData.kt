@@ -6,7 +6,7 @@ import java.util.*
 class SlyCalendarData {
 
     var selectedStartDate: Date? = null// first selected date
-    var selectedEndDate: Date? = null // ended selected date
+    var selectedEndDate: Date? = null // end selected date
     val currentDate: Date =
         SlyCalendarUtil.getCalendarWithoutTime(Date()).time // current showing date
     var isFirstMonday = true
@@ -22,6 +22,15 @@ class SlyCalendarData {
 
     var currentState = State.DEFAULT // current date to select
     var isDisableFutureDates: Boolean = true // make future dates are not selectable
+    val isDateState: Boolean
+        get() {
+            return when (currentState) {
+                State.START_DATE,
+                State.END_DATE,
+                State.DEFAULT -> true
+                else -> false
+            }
+        }
 
     fun setNewSelectedDate(selectedDate: Date) {
         val startDate = selectedStartDate
@@ -119,6 +128,14 @@ class SlyCalendarData {
             else -> {
                 // ignored
             }
+        }
+    }
+
+    fun cancelYearState() {
+        currentState = when (currentState) {
+            State.START_YEAR -> State.START_DATE
+            State.END_YEAR -> State.END_DATE
+            else -> currentState
         }
     }
 }

@@ -24,8 +24,10 @@ internal class SlyCalendarHeaderView @JvmOverloads constructor(
     var listener: DateSwitchedListener? = null
     var currentState: State = State.DEFAULT
         set(value) {
-            field = value
-            switchDate()
+            if (field != value) {
+                field = value
+                switchDate()
+            }
         }
     private val startYear: TextView
     private val endYear: TextView

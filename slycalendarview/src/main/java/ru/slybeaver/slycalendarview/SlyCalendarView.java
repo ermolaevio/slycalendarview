@@ -155,9 +155,7 @@ public class SlyCalendarView extends FrameLayout
     @Override
     public void onYearClicked(@NotNull State state) {
         slyCalendarData.setCurrentState(state);
-        arrows.setVisibility(View.GONE);
-        viewPager.setVisibility(View.INVISIBLE);
-        yearsList.setVisibility(View.VISIBLE);
+        switchToYearOrMonth(true);
 
         Calendar calendar = Calendar.getInstance();
         PagerAdapter adapter = viewPager.getAdapter();
@@ -182,14 +180,10 @@ public class SlyCalendarView extends FrameLayout
 
     @Override
     public void onYearSelected(int year) {
-        arrows.setVisibility(View.VISIBLE);
-        viewPager.setVisibility(View.VISIBLE);
-        yearsList.setVisibility(View.GONE);
-        yearsList.setAdapter(null);
+        switchToYearOrMonth(false);
 
         MonthPagerAdapter adapter = (MonthPagerAdapter) viewPager.getAdapter();
-
-        if (slyCalendarData.getCurrentDate() == null || adapter == null) return;
+        if (adapter == null) return;
 
         slyCalendarData.setNewSelectedYear(year);
         updateHeader();
@@ -220,11 +214,17 @@ public class SlyCalendarView extends FrameLayout
         findViewById(R.id.txtCancel).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (callback != null) {
-                    callback.onCancelled();
-                }
-                if (completeListener != null) {
-                    completeListener.complete();
+                if (slyCalendarData.isDateState()) {
+                    if (callback != null) {
+                        callback.onCancelled();
+                    }
+                    if (completeListener != null) {
+                        completeListener.complete();
+                    }
+                } else {
+                    switchToYearOrMonth(false);
+                    slyCalendarData.cancelYearState();
+                    updateHeader();
                 }
             }
         });
@@ -269,8 +269,17 @@ public class SlyCalendarView extends FrameLayout
         });
     }
 
+    private void switchToYearOrMonth(boolean switchToYear) {
+        arrows.setVisibility(switchToYear ? View.GONE : View.VISIBLE);
+        viewPager.setVisibility(switchToYear ? View.INVISIBLE : View.VISIBLE);
+        yearsList.setVisibility(switchToYear ? View.VISIBLE : View.GONE);
+        if (!switchToYear) {
+            yearsList.setAdapter(null);
+        }
+    }
+
     private void paintCalendar() {
-        // todo move
+        // todo move to header view
         /*findViewById(R.id.mainFrame).setBackgroundColor(slyCalendarData.getBackgroundColor());
         findViewById(R.id.headerView).setBackgroundColor(slyCalendarData.getHeaderColor());
         ((TextView) findViewById(R.id.txtYear)).setTextColor(slyCalendarData.getHeaderTextColor());
